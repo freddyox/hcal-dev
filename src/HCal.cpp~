@@ -1,0 +1,13 @@
+#include "../include/HCal.hh"
+
+
+
+
+ECal::ECal(float x, float y){
+  displayx = x;
+  displayy = y;
+
+  center = sf::Vector2f( displayx/2.0, displayy/2.0 );
+  mylar  = 1.0;
+
+}

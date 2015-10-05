@@ -1,0 +1,34 @@
+#ifndef HCAL_HH
+#define HCAL_HH
+
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <map>
+#include <set>
+
+class HCal : public sf::Drawable, public sf::Transformable {
+
+private:
+  float displayx, displayy;
+  sf::Vector2f center;
+  float mylar;
+  float size;
+  float minx, maxx, miny, maxy;
+  int count_modules, count_nodes;
+  int maxclustersize;
+
+  sf::RectangleShape temp;
+  std::vector<sf::RectangleShape> modules;
+  std::vector<sf::RectangleShape>::iterator modit;
+  std::map<int,sf::RectangleShape> modmap, cluster, final;
+  std::map<int,sf::RectangleShape>::iterator mapit, clustit, clusterit, lastone;
+
+
+public:
+  HCal(float,float);
+  ~HCal() {};
+  
+  void draw(sf::RenderTarget&, sf::RenderStates) const;
+
+};
+#endif

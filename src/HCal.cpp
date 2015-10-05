@@ -47,8 +47,8 @@ HCal::HCal(float x, float y){
     std::cerr << "ERROR: Font did not load properly." << std::endl;
   }
   textind.setFont(font);
-  textind.setCharacterSize( 15 );
-  textind.setColor( sf::Color::White );
+  textind.setCharacterSize( 45 );
+  textind.setColor( sf::Color::Black );
 
 
   // Initialize color vectors
@@ -102,10 +102,11 @@ void HCal::initializeHCal() {
   if( layout.is_open() ) {
     while( getline(layout,line) ) {
       if( line[0] != '#' ) {
-	int cell, x, y, row, col;
+	int cell, row, col;
+	float x, y;
 	std::stringstream first(line);
 	first >> cell >> x >> y >> row >> col;
-	sf::Vector2f cellposition( 0.5*displayx + float(x), 0.5*displayy + -1*float(y) );
+	sf::Vector2f cellposition( 0.5*displayx + x, 0.5*displayy + y );
 
 	temp.setPosition( cellposition );
 	modules.push_back( temp );
@@ -120,6 +121,7 @@ void HCal::initializeHCal() {
   hcal_x = maxcol * size.x;
   hcal_y = maxrow * size.y;
   sf::Vector2f hcal_size_half( hcal_x/2.0, hcal_y/2.0 );
+
   // Make Nodes
   float totalX = hcal_x;
   int numberX = int(totalX)/increment + 1;
@@ -277,7 +279,7 @@ void HCal::logicinfo() {
   // to the center of HCal
   int node = 0;
   
-  std::ofstream logic_file("logic.txt");
+  std::ofstream logic_file("logic_new.txt");
   if( logic_file.is_open() ) {
     logic_file << "# Units are in mm. " << std::endl;
     logic_file << "# Coordinates are relative to HCal center, same system as G4SBS" << std::endl;
@@ -296,7 +298,7 @@ void HCal::logicinfo() {
 	sf::Vector2f size = mapit->second.getSize();
 	
 	logic_file << std::setw(5) << mapit->first << std::setw(6) << temp.x 
-		   << std::setw(8) << -1*temp.y + 0.5   << std::setw(5) << size.x << std::endl; 
+		   << std::setw(8) << temp.y  << std::setw(5) << size.x << std::endl; 
       }
       logic_file << "# node number = " << node << " with " << cells << " cells" << std::endl;
     }
@@ -306,21 +308,46 @@ void HCal::logicinfo() {
   logic_file.close();
 }
 
+void HCal::indexnodes() {
+  int nodeindex = 1;
+  
+  sf::Vector2f offset( 2*nodeR, -2*nodeR );
+  
+  for( nodit = nodes.begin(); nodit != nodes.end(); nodit++ ) { 
+    // Handle the index text - int conversion to string
+    std::stringstream temp;
+    temp << nodeindex;
+    std::string indexstring = temp.str();
+    nodeindex++;
+
+    // Grab node position
+    sf::Vector2f tempposition = nodit->getPosition();
+    sf::Vector2f final = tempposition + offset;
+    // Handle the text properties
+    textind.setString( indexstring );
+    textind.setPosition( final.x, final.y );
+    textnodes.push_back( textind );
+  }
+}
+
 void HCal::draw(sf::RenderTarget& target, sf::RenderStates) const{
   std::map<int,sf::RectangleShape>::const_iterator cit;
   for( cit = modmap.begin(); cit != modmap.end(); cit++ ){
     target.draw( cit->second );
   }
   std::vector<std::map<int,sf::RectangleShape> >::const_iterator glit_const;
-  //if( !logcolors ){
   for( glit_const = global_logic.begin(); glit_const != global_logic.end(); glit_const++ ) {
     for( cit = glit_const->begin(); cit != glit_const->end(); cit++ ) {
       target.draw( (*cit).second );
     }
   }
-  //}
+
   std::vector<sf::CircleShape>::const_iterator cit1;
   for( cit1 = nodes.begin(); cit1 != nodes.end(); cit1++ ){
     target.draw(*cit1);
+  }
+  std::vector<sf::Text>::const_iterator textit;
+  for( textit = textnodes.begin(); textit != textnodes.end(); textit++ ) {
+    target.draw( *textit );
   }
 }

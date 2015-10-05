@@ -31,6 +31,7 @@ int main() {
   hcal.triggerlogic();
   hcal.colorthelogic();
   hcal.logicinfo();
+  hcal.indexnodes();
 
   while( window.isOpen() ) {
     sf::Event event;

@@ -55,5 +55,7 @@ public:
   void triggerlogic();
   void colorthelogic();
   void logicinfo();
+  void indexnodes();
+
 };
 #endif

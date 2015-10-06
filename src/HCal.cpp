@@ -48,7 +48,7 @@ HCal::HCal(float x, float y){
   }
   textind.setFont(font);
   textind.setCharacterSize( 45 );
-  textind.setColor( sf::Color::Black );
+  textind.setColor( sf::Color::White );
 
 
   // Initialize color vectors
@@ -59,9 +59,13 @@ HCal::HCal(float x, float y){
   sf::Color cyan = sf::Color(0,51,51);
   sf::Color magenta = sf::Color(51,0,51);
   sf::Color dontknow = sf::Color(18,20,25);
+  sf::Color rand = sf::Color(90,0,0);
+  sf::Color rand1 = sf::Color(90,90,0);
+  colors.push_back( rand );
   colors.push_back( dontknow );
   colors.push_back( yellow );
   colors.push_back( green );
+  colors.push_back( rand1 );
   colors.push_back( cyan );
   colors.push_back( red );
   colors.push_back( blue );
@@ -96,9 +100,14 @@ HCal::HCal(float x, float y){
 
 void HCal::initializeHCal() {
   std::ifstream layout;
-  layout.open("hcal_layout1.txt");
+  layout.open("hcal_layout_code.txt");
   std::string line;
-  
+
+  // G4SBS coordinates to SFML:
+  // There should be a 180 degree rotation between the two 
+  // coordinate systems, so cell 1 in G4SBS is actually bottom 
+  // right corner (looking downstream). This transforms to 
+  // top left corner in SFML. 
   if( layout.is_open() ) {
     while( getline(layout,line) ) {
       if( line[0] != '#' ) {
@@ -121,13 +130,13 @@ void HCal::initializeHCal() {
   hcal_x = maxcol * size.x;
   hcal_y = maxrow * size.y;
   sf::Vector2f hcal_size_half( hcal_x/2.0, hcal_y/2.0 );
-
+  sf::Vector2f offset( increment, increment);
   // Make Nodes
   float totalX = hcal_x;
-  int numberX = int(totalX)/increment + 1;
+  int numberX = int(totalX)/increment;
   float totalY = hcal_y;
-  int numberY = int(totalY)/increment + 1;
-  sf::Vector2f start = center_display - hcal_size_half;
+  int numberY = int(totalY)/increment - 1;
+  sf::Vector2f start = center_display - hcal_size_half + offset;
 
   for( int row=0; row<numberY; row++ ) {
     for( int col=0; col<numberX; col++ ) {
@@ -341,7 +350,6 @@ void HCal::draw(sf::RenderTarget& target, sf::RenderStates) const{
       target.draw( (*cit).second );
     }
   }
-
   std::vector<sf::CircleShape>::const_iterator cit1;
   for( cit1 = nodes.begin(); cit1 != nodes.end(); cit1++ ){
     target.draw(*cit1);

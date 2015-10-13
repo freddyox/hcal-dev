@@ -108,6 +108,10 @@ void HCal::initializeHCal() {
   // coordinate systems, so cell 1 in G4SBS is actually bottom 
   // right corner (looking downstream). This transforms to 
   // top left corner in SFML. 
+
+  std::set<int> te_cellnumber;
+  std::set<int>::iterator sit;
+
   if( layout.is_open() ) {
     while( getline(layout,line) ) {
       if( line[0] != '#' ) {
@@ -121,11 +125,34 @@ void HCal::initializeHCal() {
 	modules.push_back( temp );
 	modmap[cell] = temp;
 	count_modules++;
+
+	if( row != 1 ) {
+	  if( col != 1 ) {
+	    if( col != 11 && row != 24 ) {
+	      te_cellnumber.insert( cell );
+	    } 
+	  }
+	}
       }
     }
   }
   else std::cerr << "Error opening ecal_layout.txt" << std::endl;
   layout.close();
+
+  std::ofstream te_hcal_layout("hcal_te_layout.txt");
+  if( te_hcal_layout.is_open() ) {
+    for( sit = te_cellnumber.begin(); sit != te_cellnumber.end(); sit++ ) {
+      te_hcal_layout << *sit << std::endl;
+      // for( mapit = modmap.begin(); mapit != modmap.end(); mapit++ ) {
+      //   if( *sit == mapit->first ) {
+      // 	//mapit->second.setFillColor( sf::Color::Blue );
+      //   } 
+      // }
+    }
+  }
+  else 
+    std::cerr << "Trigger txt did not open properly" << std::endl;
+  te_hcal_layout.close();
 
   hcal_x = maxcol * size.x;
   hcal_y = maxrow * size.y;
@@ -150,7 +177,7 @@ void HCal::initializeHCal() {
 void HCal::triggerlogic() {
 
   for( int i=0; i<nodes.size(); i++ ) {
-    if( i%1==0 ) {
+    if( i%1==1000 ) {
       sf::Vector2f nodetemp = nodes[i].getPosition();
       sf::Vector2f centerlogic(0,0);
       sf::Vector2f neighbors(0,0);

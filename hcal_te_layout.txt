@@ -1,4 +1,3 @@
-# HCal trigger logic layout. Exclude all perimeter modules. Numbers below are cell numbers.
 26
 27
 28

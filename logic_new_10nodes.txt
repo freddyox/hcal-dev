@@ -3,7 +3,7 @@
 # Number of logic patterns = 10
 # Number of modules = 264
 
-#cell    x    y   size
+#cell    x     y     size
     1  -765 -1759.5  153
     2  -765 -1606.5  153
     3  -765 -1453.5  153

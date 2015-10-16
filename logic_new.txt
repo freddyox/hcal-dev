@@ -1,0 +1,6 @@
+# Units are in mm. 
+# Coordinates are relative to HCal center, same system as G4SBS
+# Number of logic patterns = 0
+# Number of modules = 264
+
+#cell    x    y   size
